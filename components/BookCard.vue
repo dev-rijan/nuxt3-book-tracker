@@ -10,12 +10,12 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import { NCard, NText } from 'naive-ui'
+import { NCard, NSpace } from 'naive-ui'
 
 export default defineComponent({
   components: {
     NCard,
-    NText,
+    NSpace,
   },
   setup() {
     return {

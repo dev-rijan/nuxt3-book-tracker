@@ -87,7 +87,6 @@ export default defineComponent({
           if (!errors) {
             message.success('Valid')
           } else {
-            console.log(errors)
             message.error('Invalid')
           }
         })

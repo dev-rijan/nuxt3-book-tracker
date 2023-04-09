@@ -1,6 +1,11 @@
 <template>
   <n-space vertical>
-    <n-button size="large" type="primary" :render-icon="renderIcon">
+    <n-button
+      size="large"
+      type="primary"
+      :render-icon="renderIcon"
+      @click="openBookRegisterDrawer = true"
+    >
       Register new book
     </n-button>
     <div class="books">
@@ -12,6 +17,11 @@
         <BookCard />
       </n-space>
     </div>
+    <RegisterBook
+      :open-drawer="openBookRegisterDrawer"
+      @register:book="onRegisterBook"
+      @close:drawer="openBookRegisterDrawer = false"
+    ></RegisterBook>
   </n-space>
 </template>
 
@@ -27,10 +37,16 @@ export default defineComponent({
   },
   setup() {
     return {
+      openBookRegisterDrawer: ref<boolean>(false),
       renderIcon() {
         return h(BookAdd20Filled)
       },
     }
+  },
+  methods: {
+    onRegisterBook(book) {
+      console.log(book)
+    },
   },
 })
 </script>
