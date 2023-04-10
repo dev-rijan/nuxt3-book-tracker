@@ -18,18 +18,7 @@
           />
         </n-form-item>
         <n-form-item label="Read at" path="readAt">
-          <n-date-picker v-model:value="book.readAt" type="date" />
-        </n-form-item>
-        <n-form-item label="comment" path="comment">
-          <n-input
-            v-model:value="book.comment"
-            placeholder="Textarea"
-            type="textarea"
-            :autosize="{
-              minRows: 3,
-              maxRows: 5,
-            }"
-          />
+          <n-date-picker v-model:formatted-value="book.readAt" type="date" />
         </n-form-item>
         <div style="display: flex; justify-content: flex-end">
           <n-button round type="primary" @click="handleRegister">
@@ -97,7 +86,6 @@ export default defineComponent({
       book: ref({
         author: null,
         title: null,
-        comment: null,
         readAt: null,
       }),
       formRef,

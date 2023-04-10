@@ -32,7 +32,7 @@
           />
         </n-form-item>
         <div style="display: flex; justify-content: flex-end">
-          <n-button round type="primary" @click="handleValidateButtonClick">
+          <n-button round type="primary" @click="handleComment">
             comment
           </n-button>
         </div>
@@ -81,10 +81,11 @@ export default defineComponent({
         },
       },
       show: ref<boolean>(false),
-      handleValidateButtonClick(e: MouseEvent) {
+      handleComment(e: MouseEvent) {
         e.preventDefault()
         formRef.value?.validate((errors) => {
           if (!errors) {
+            this.$emit('create:comment', bookComment.value)
             message.success('Valid')
           } else {
             message.error('Invalid')

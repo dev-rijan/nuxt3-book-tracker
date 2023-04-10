@@ -11,6 +11,11 @@ export default defineNuxtConfig({
           ]
         : ['@juggle/resize-observer'],
   },
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: process.env.API_BASE_URL,
+    },
+  },
   vite: {
     optimizeDeps: {
       include:

@@ -10,11 +10,7 @@
     </n-button>
     <div class="books">
       <n-space>
-        <BookCard />
-        <BookCard />
-        <BookCard />
-        <BookCard />
-        <BookCard />
+        <BookCard v-for="book in books" :key="book.id" :book="book" />
       </n-space>
     </div>
     <RegisterBook
@@ -25,28 +21,30 @@
   </n-space>
 </template>
 
-<script lang="ts">
-import { defineComponent, h } from 'vue'
+<script lang="ts" setup>
+import { h } from 'vue'
 import { NSpace, NButton } from 'naive-ui'
 import { BookAdd20Filled } from '@vicons/fluent'
-export default defineComponent({
-  components: {
-    BookAdd20Filled,
-    NButton,
-    NSpace,
-  },
-  setup() {
-    return {
-      openBookRegisterDrawer: ref<boolean>(false),
-      renderIcon() {
-        return h(BookAdd20Filled)
-      },
-    }
-  },
-  methods: {
-    onRegisterBook(book) {
-      console.log(book)
+import { Book, BookInput } from '@/types/book'
+
+const openBookRegisterDrawer = ref<boolean>(false)
+const { data: books, refresh: refreshBooks } = await useAPIFetch<Book[]>(
+  '/books',
+  {
+    method: 'GET',
+    transform: (data) => {
+      return data?.data?.books
     },
-  },
-})
+  }
+)
+
+const renderIcon = () => {
+  return h(BookAdd20Filled)
+}
+
+const onRegisterBook = (bookInput: BookInput) => {
+  useAPIFetch('/book', { method: 'POST', body: bookInput }).then(() => {
+    refreshBooks()
+  })
+}
 </script>
