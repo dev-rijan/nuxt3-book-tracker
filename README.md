@@ -34,16 +34,27 @@ npm run lintfix
 ## Project deployment
 This app has setup to deploy static site to s3
 
-step1: Make sure to setup aws profile in your machine
+Step1: Install serverless framework CLI if you not installed before
+```shell
+npm install -g serverless
 ```
 
-```
-step2: Generate static site
+Step2: Configure AWS
+Setup AWS CLI if you have not already. 
+you can find useful article here [create and configure AWS credentials](https://levelup.gitconnected.com/configure-aws-for-development-and-deployment-ad822097fc22)
+
+step3: Generate static site
 ```
 npm run generate
 ```
 
-step 3: Deploy to s3 using serverless framework
+step4: Deploy to s3 using serverless framework
 ```
 serverless client deploy
+```
+
+OR if you have `make` command supports in your machine
+
+```
+make deploy
 ```
