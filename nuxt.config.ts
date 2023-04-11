@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  ssr: false,
   build: {
     transpile:
       process.env.NODE_ENV === 'production'
@@ -10,6 +11,11 @@ export default defineNuxtConfig({
             '@juggle/resize-observer',
           ]
         : ['@juggle/resize-observer'],
+  },
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: process.env.API_BASE_URL,
+    },
   },
   vite: {
     optimizeDeps: {

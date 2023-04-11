@@ -1,0 +1,19 @@
+service: book-tracker
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: dev
+  region: ap-northeast-1
+
+plugins:
+  - serverless-finch
+
+custom:
+  client:
+    bucketName: book-tracker-app
+    distributionFolder: dist/
+    indexDocument: index.html
+    errorDocument: 404.html

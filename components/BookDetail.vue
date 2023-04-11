@@ -1,49 +1,82 @@
 <template>
-  <n-button @click="show = true"> Open </n-button>
-  <n-drawer v-model:show="show" :width="502">
-    <n-drawer-content title="Stoner" closable>
-      <n-card title="Clean Architecture">
-        <n-space>
-          <img src="../assets/images/book_cover.svg" height="300" width="200" />
-          Book by c. martin
-        </n-space>
-      </n-card>
-      <n-form
-        ref="formRef"
-        :model="bookComment"
-        :rules="rules"
-        label-placement="left"
-        require-mark-placement="right-hanging"
-        size="large"
-        label-width="auto"
-        :style="{
-          maxWidth: '640px',
-        }"
-      >
-        <n-form-item label="Textarea" path="textareaValue">
-          <n-input
-            v-model:value="bookComment.comment"
-            placeholder="Textarea"
-            type="textarea"
-            :autosize="{
-              minRows: 3,
-              maxRows: 5,
-            }"
-          />
-        </n-form-item>
-        <div style="display: flex; justify-content: flex-end">
-          <n-button round type="primary" @click="handleValidateButtonClick">
-            comment
+  <n-drawer
+    v-model:show="show"
+    :width="560"
+    :close-on-esc="false"
+    :mask-closable="false"
+  >
+    <n-drawer-content v-if="book">
+      <template #header>
+        <n-space justify-content="space-between">
+          <span class="book-title">Book detail</span>
+          <n-button
+            quaternary
+            circle
+            class="close-button"
+            type="error"
+            @click="emits('close:drawer', true)"
+          >
+            <template #icon>
+              <n-icon>
+                <dismiss-icon />
+              </n-icon>
+            </template>
           </n-button>
-        </div>
-      </n-form>
+        </n-space>
+      </template>
+      <BookCard :book="book" />
+      <div class="comment-form">
+        <n-form
+          ref="formRef"
+          :model="bookComment"
+          :rules="rules"
+          label-placement="top"
+          size="large"
+          label-width="auto"
+          :style="{
+            maxWidth: '640px',
+          }"
+        >
+          <n-form-item label="Comments" path="comment">
+            <n-input
+              v-model:value="bookComment.comment"
+              placeholder="Add comment"
+              type="textarea"
+              :autosize="{
+                minRows: 3,
+                maxRows: 5,
+              }"
+            />
+          </n-form-item>
+          <div style="display: flex; justify-content: flex-end">
+            <n-button round type="primary" @click="handleComment">
+              comment
+            </n-button>
+          </div>
+        </n-form>
+      </div>
+      <div class="comments">
+        <n-timeline>
+          <n-timeline-item
+            v-for="bookComment in book.comments"
+            :key="bookComment.id"
+            type="info"
+            :content="bookComment.comment"
+            :time="formatDate(bookComment.commentAt)"
+          >
+            <template #icon>
+              <n-icon>
+                <comment-icon />
+              </n-icon>
+            </template>
+          </n-timeline-item>
+        </n-timeline>
+      </div>
     </n-drawer-content>
   </n-drawer>
 </template>
-<script lang="ts">
-import { defineComponent, ref } from 'vue'
+<script lang="ts" setup>
 import {
-  NCard,
   NButton,
   NDrawer,
   NDrawerContent,
@@ -53,52 +86,83 @@ import {
   NInput,
   FormInst,
   useMessage,
+  NIcon,
+  FormRules,
+  NTimeline,
+  NTimelineItem,
 } from 'naive-ui'
+import {
+  Dismiss20Filled as DismissIcon,
+  CommentNote20Regular as CommentIcon,
+} from '@vicons/fluent'
+import { BookComment as IBookComment } from '@/types/book'
+interface Props {
+  bookId: string
+  openBookDetail: boolean
+}
+const emits = defineEmits<{
+  (e: 'close:drawer', value: boolean): void
+}>()
+const props = defineProps<Props>()
+const formRef = ref<FormInst | null>(null)
+const show = toRef(props, 'openBookDetail')
+const message = useMessage()
 
-export default defineComponent({
-  components: {
-    NCard,
-    NButton,
-    NDrawer,
-    NDrawerContent,
-    NForm,
-    NFormItem,
-    NInput,
-    NSpace,
-  },
-  setup() {
-    const formRef = ref<FormInst | null>(null)
-    const message = useMessage()
-    return {
-      bookComment: ref({
-        comment: null,
-      }),
-      formRef,
-      rules: {
-        comment: {
-          required: true,
-          trigger: ['blur', 'input'],
-        },
-      },
-      show: ref<boolean>(false),
-      handleValidateButtonClick(e: MouseEvent) {
-        e.preventDefault()
-        formRef.value?.validate((errors) => {
-          if (!errors) {
-            message.success('Valid')
-          } else {
-            console.log(errors)
-            message.error('Invalid')
-          }
-        })
-      },
-    }
-  },
+const { data: book, refresh: refreshBook } = await useAPIFetch<IBookComment>(
+  '/book',
+  {
+    params: { bookId: props.bookId },
+    transform: (data) => {
+      return data?.data?.book
+    },
+  }
+)
+
+const bookComment = ref({
+  comment: '',
 })
+
+const rules: FormRules = {
+  comment: [
+    {
+      required: true,
+      message: 'Comment is required',
+    },
+  ],
+}
+
+const handleComment = (e: MouseEvent) => {
+  e.preventDefault()
+  formRef.value?.validate((errors) => {
+    if (!errors && book.value) {
+      useAPIFetch('/comment', {
+        method: 'POST',
+        body: {
+          bookId: book.value.id,
+          comment: bookComment.value.comment,
+        },
+      }).then(() => {
+        bookComment.value.comment = ''
+        refreshBook()
+        message.success('Successfully commented')
+      })
+    }
+  })
+}
+
+const formatDate = (timestamp: Number) => {
+  return new Date(timestamp.valueOf()).toLocaleString()
+}
 </script>
 
 <style scoped>
 .n-card {
   max-width: 300px;
+}
+.close-button {
+  margin-left: 22rem;
+}
+.comment-form {
+  margin-top: 2rem;
 }
 </style>

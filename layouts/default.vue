@@ -22,16 +22,7 @@
   </n-layout>
 </template>
 <script lang="ts" setup>
-import 'vfonts/Lato.css'
-import 'vfonts/FiraCode.css'
-import {
-  NLayout,
-  NLayoutHeader,
-  NLayoutContent,
-  NGradientText,
-  NIcon,
-} from 'naive-ui'
-import { BookSearch20Regular } from '@vicons/fluent'
+import { NLayout, NLayoutHeader, NLayoutContent, NGradientText } from 'naive-ui'
 </script>
 <style>
 #__nuxt {
