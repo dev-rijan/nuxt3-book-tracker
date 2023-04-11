@@ -40,15 +40,17 @@ npm install -g serverless
 ```
 
 Step2: Configure AWS
-Setup AWS CLI if you have not already. 
+Setup AWS CLI if you have not already.
 you can find useful article here [create and configure AWS credentials](https://levelup.gitconnected.com/configure-aws-for-development-and-deployment-ad822097fc22)
 
-step3: Generate static site
+step3: Update .env variables
+
+step4: Generate static site
 ```
 npm run generate
 ```
 
-step4: Deploy to s3 using serverless framework
+step5: Deploy to s3 using serverless framework
 ```
 serverless client deploy
 ```
