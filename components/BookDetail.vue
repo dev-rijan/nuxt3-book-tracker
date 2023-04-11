@@ -49,29 +49,36 @@
             />
           </n-form-item>
           <div style="display: flex; justify-content: flex-end">
-            <n-button round type="primary" @click="handleComment">
+            <n-button
+              :disabled="loading"
+              round
+              type="primary"
+              @click="handleComment"
+            >
               comment
             </n-button>
           </div>
         </n-form>
       </div>
-      <div class="comments">
-        <n-timeline>
-          <n-timeline-item
-            v-for="bookComment in book.comments"
-            :key="bookComment.id"
-            type="info"
-            :content="bookComment.comment"
-            :time="formatDate(bookComment.commentAt)"
-          >
-            <template #icon>
-              <n-icon>
-                <comment-icon />
-              </n-icon>
-            </template>
-          </n-timeline-item>
-        </n-timeline>
-      </div>
+      <n-spin :show="loading">
+        <div class="comments">
+          <n-timeline>
+            <n-timeline-item
+              v-for="comment in book.comments"
+              :key="comment.id"
+              type="info"
+              :content="comment.comment"
+              :time="formatDate(comment.commentAt)"
+            >
+              <template #icon>
+                <n-icon>
+                  <comment-icon />
+                </n-icon>
+              </template>
+            </n-timeline-item>
+          </n-timeline>
+        </div>
+      </n-spin>
     </n-drawer-content>
   </n-drawer>
 </template>
@@ -90,6 +97,7 @@ import {
   FormRules,
   NTimeline,
   NTimelineItem,
+  NSpin,
 } from 'naive-ui'
 import {
   Dismiss20Filled as DismissIcon,
@@ -121,7 +129,7 @@ const { data: book, refresh: refreshBook } = await useAPIFetch<IBookComment>(
 const bookComment = ref({
   comment: '',
 })
-
+const loading = ref<boolean>(false)
 const rules: FormRules = {
   comment: [
     {
@@ -135,17 +143,22 @@ const handleComment = (e: MouseEvent) => {
   e.preventDefault()
   formRef.value?.validate((errors) => {
     if (!errors && book.value) {
+      loading.value = true
       useAPIFetch('/comment', {
         method: 'POST',
         body: {
           bookId: book.value.id,
           comment: bookComment.value.comment,
         },
-      }).then(() => {
-        bookComment.value.comment = ''
-        refreshBook()
-        message.success('Successfully commented')
       })
+        .then(() => {
+          bookComment.value.comment = ''
+          refreshBook()
+          message.success('Successfully commented')
+        })
+        .finally(() => {
+          loading.value = false
+        })
     }
   })
 }

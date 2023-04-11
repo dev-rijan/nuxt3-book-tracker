@@ -7,24 +7,27 @@
       @click="openBookRegisterDrawer = true"
       >Register new book</n-button
     >
-    <div class="books">
-      <n-space>
-        <BookWithAction
-          v-for="book in books"
-          :key="book.id"
-          :book="book"
-          @delete:book="onDeleteBook"
+    <n-spin :show="loading">
+      <div class="books">
+        <n-space>
+          <BookWithAction
+            v-for="book in books"
+            :key="book.id"
+            :book="book"
+            @delete:book="onDeleteBook"
+          />
+        </n-space>
+        <n-result
+          v-if="!books || !books.length"
+          title="No books found!"
+          description="No books are registered yet"
         />
-      </n-space>
-      <n-result
-        v-if="!books || !books.length"
-        title="No books found!"
-        description="No books are registered yet"
-      />
-    </div>
+      </div>
+    </n-spin>
     <RegisterBook
       v-if="openBookRegisterDrawer"
       :open-drawer="openBookRegisterDrawer"
+      :loading="bookRegisterPending"
       @register:book="onRegisterBook"
       @close:drawer="openBookRegisterDrawer = false"
     ></RegisterBook>
@@ -32,11 +35,13 @@
 </template>
 
 <script lang="ts" setup>
-import { NSpace, NButton, NResult } from 'naive-ui'
+import { NSpace, NButton, NResult, NSpin } from 'naive-ui'
 import { BookAdd20Filled } from '@vicons/fluent'
 import { Book, BookInput } from '@/types/book'
 
 const openBookRegisterDrawer = ref<boolean>(false)
+const bookRegisterPending = ref<boolean>(false)
+const loading = ref<boolean>(false)
 const { data: books, refresh: refreshBooks } = await useAPIFetch<Book[]>(
   '/books',
   {
@@ -51,15 +56,25 @@ const renderIcon = () => {
 }
 
 const onRegisterBook = (bookInput: BookInput) => {
-  useAPIFetch('/book', { method: 'POST', body: bookInput }).then(() => {
-    openBookRegisterDrawer.value = false
-    refreshBooks()
-  })
+  bookRegisterPending.value = true
+  useAPIFetch('/book', { method: 'POST', body: bookInput })
+    .then(() => {
+      openBookRegisterDrawer.value = false
+      refreshBooks()
+    })
+    .finally(() => {
+      bookRegisterPending.value = false
+    })
 }
 
 const onDeleteBook = (bookId: string) => {
-  useAPIFetch('/book', { method: 'DELETE', params: { bookId } }).then(() => {
-    refreshBooks()
-  })
+  loading.value = true
+  useAPIFetch('/book', { method: 'DELETE', params: { bookId } })
+    .then(async () => {
+      await refreshBooks()
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 </script>

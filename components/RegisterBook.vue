@@ -1,45 +1,55 @@
 <template>
   <n-drawer :show="openDrawer" :width="500">
     <n-drawer-content title="Register book">
-      <n-form
-        ref="formRef"
-        :model="book"
-        :rules="rules"
-        label-width="auto"
-        size="large"
-      >
-        <n-form-item label="ISBN" path="ISBN">
-          <n-input-group>
-            <n-input v-model:value="isbnNumber" placeholder="Search by ISBN" />
-            <n-button type="primary" @click="searchBookByISBN">
-              Search
+      <n-spin :show="loading">
+        <n-form
+          ref="formRef"
+          :model="book"
+          :rules="rules"
+          label-width="auto"
+          size="large"
+        >
+          <n-form-item label="ISBN" path="ISBN">
+            <n-input-group>
+              <n-input
+                v-model:value="isbnNumber"
+                placeholder="Search by ISBN"
+              />
+              <n-button type="primary" @click="searchBookByISBN">
+                Search
+              </n-button>
+            </n-input-group>
+          </n-form-item>
+          <n-divider title-placement="left"> OR </n-divider>
+          <n-form-item label="Title" path="title">
+            <n-input
+              v-model:value="book.title"
+              placeholder="Input book title"
+            />
+          </n-form-item>
+          <n-form-item label="Author" path="author">
+            <n-input
+              v-model:value="book.author"
+              placeholder="Input book author"
+            />
+          </n-form-item>
+          <n-form-item label="Read at" path="readAt">
+            <n-date-picker v-model:formatted-value="book.readAt" type="date" />
+          </n-form-item>
+          <div style="display: flex; justify-content: flex-start">
+            <n-button type="primary" @click="handleRegister">
+              Register
             </n-button>
-          </n-input-group>
-        </n-form-item>
-        <n-divider title-placement="left"> OR </n-divider>
-        <n-form-item label="Title" path="title">
-          <n-input v-model:value="book.title" placeholder="Input book title" />
-        </n-form-item>
-        <n-form-item label="Author" path="author">
-          <n-input
-            v-model:value="book.author"
-            placeholder="Input book author"
-          />
-        </n-form-item>
-        <n-form-item label="Read at" path="readAt">
-          <n-date-picker v-model:formatted-value="book.readAt" type="date" />
-        </n-form-item>
-        <div style="display: flex; justify-content: flex-start">
-          <n-button type="primary" @click="handleRegister"> Register </n-button>
-          <n-button
-            class="cancle-button"
-            type="warning"
-            @click="$emit('close:drawer')"
-          >
-            Cancel
-          </n-button>
-        </div>
-      </n-form>
+            <n-button
+              class="cancle-button"
+              type="warning"
+              @click="$emit('close:drawer')"
+            >
+              Cancel
+            </n-button>
+          </div>
+        </n-form>
+      </n-spin>
     </n-drawer-content>
   </n-drawer>
 </template>
@@ -57,6 +67,7 @@ import {
   useMessage,
   FormRules,
   NDivider,
+  NSpin,
 } from 'naive-ui'
 import { BookInput } from '@/types/book'
 import { GoogleBookResponse } from '@/types/googleBook'
@@ -69,9 +80,11 @@ const emits = defineEmits<{
 const props = withDefaults(
   defineProps<{
     openDrawer: boolean
+    loading: boolean
   }>(),
   {
     openDrawer: false,
+    loading: false,
   }
 )
 const book = ref<BookInput>({
