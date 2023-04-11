@@ -158,11 +158,13 @@ const formatDate = (timestamp: Number) => {
 <style scoped>
 .n-card {
   max-width: 300px;
+  max-height: 250px;
 }
 .close-button {
   margin-left: 22rem;
 }
 .comment-form {
   margin-top: 2rem;
+  margin-bottom: 0.5rem;
 }
 </style>

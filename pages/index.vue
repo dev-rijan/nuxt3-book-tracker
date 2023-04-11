@@ -23,6 +23,7 @@
       />
     </div>
     <RegisterBook
+      v-if="openBookRegisterDrawer"
       :open-drawer="openBookRegisterDrawer"
       @register:book="onRegisterBook"
       @close:drawer="openBookRegisterDrawer = false"

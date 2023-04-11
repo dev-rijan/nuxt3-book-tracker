@@ -2,7 +2,7 @@
   <div class="book-card">
     <BookCard :book="book">
       <template #actions>
-        <n-space>
+        <n-space class="actions">
           <n-button strong secondary round type="info" @click="onViewBook"
             >view</n-button
           >
@@ -57,5 +57,9 @@ const onCloseDrawer = () => {
 .n-card {
   max-width: 300px;
   height: 300px;
+}
+
+.actions {
+  margin-top: 1rem;
 }
 </style>

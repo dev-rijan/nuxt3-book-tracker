@@ -29,11 +29,13 @@
         <n-form-item label="Read at" path="readAt">
           <n-date-picker v-model:formatted-value="book.readAt" type="date" />
         </n-form-item>
-        <div style="display: flex; justify-content: flex-end">
-          <n-button round type="primary" @click="handleRegister">
-            Register
-          </n-button>
-          <n-button round type="warning" @click="$emit('close:drawer')">
+        <div style="display: flex; justify-content: flex-start">
+          <n-button type="primary" @click="handleRegister"> Register </n-button>
+          <n-button
+            class="cancle-button"
+            type="warning"
+            @click="$emit('close:drawer')"
+          >
             Cancel
           </n-button>
         </div>
@@ -72,6 +74,11 @@ const props = withDefaults(
     openDrawer: false,
   }
 )
+const book = ref<BookInput>({
+  author: '',
+  title: '',
+  readAt: undefined,
+})
 
 const formRef = ref<FormInst | null>(null)
 const isbnNumber = ref<string>('')
@@ -91,12 +98,6 @@ const rules: FormRules = {
     },
   ],
 }
-
-const book = ref<BookInput>({
-  author: '',
-  title: '',
-  readAt: undefined,
-})
 
 const handleRegister = (e: MouseEvent) => {
   e.preventDefault()
@@ -133,5 +134,9 @@ const searchBookByISBN = (e: MouseEvent) => {
 <style scoped>
 .n-card {
   max-width: 300px;
+}
+
+.cancle-button {
+  margin-left: 1rem;
 }
 </style>
