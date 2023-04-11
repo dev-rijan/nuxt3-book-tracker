@@ -11,6 +11,10 @@ Install dependencies:
 ```
 npm install
 ```
+Copy .env.example and make .env file, also change variables in .env file accordingly
+```
+cp .env.example .env
+```
 
 Run development server:
 ```
