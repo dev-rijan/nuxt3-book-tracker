@@ -60,3 +60,6 @@ OR if you have `make` command supports in your machine
 ```
 make deploy
 ```
+
+### Things can be improved
+- Setup vitetest
